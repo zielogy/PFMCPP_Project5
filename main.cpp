@@ -1,450 +1,714 @@
-#include <iostream>
-#include <string>
 /*
-Project 5: Part 1 / 4
- video Chapter 2 - Part 12
+Project 5: Part 2 / 4
+ video: Chapter 3 Part 1
 
- Create a branch named Part1
+Create a branch named Part2
 
-Purpose:  This project continues developing Project3.
-       you will learn how to take code from existing projects and migrate only
-what you need to new projects you will learn how to write code that doesn't leak
-as well as how to refactor.
+ The 'this' keyword
+ 
+ The purpose of this project part is to show you how accessing member variables of objects INSIDE member functions is very similar to accessing member variables of objects OUTSIDE of member functions, via the 'this' keyword and arrow (->) operator and via the '.' operator.
+ This project part will break the D.R.Y. rule, but that is fine for the purpose of this project part.
+ 
+ Instructions:
+ 1) if you don't have any std::cout statements in main() that access member variables of your U.D.Ts
+         write some.
+    You can copy some from your Project3's main() if needed.
 
-NOTE: there are 2 sets of instructions:
-       One for if you completed project 3
-       One for if you skipped project 3.
+ 2) Do the following for EVERY std::cout statement in main() that uses the UDT member variables and functions:
+    a) write a member function that prints the same thing out, but uses the proper techniques inside the member functions to access the same member variables/functions.
+    b) be explicit with your use of 'this->' in those member functions so we see how you're accessing/calling those member variables and functions *inside*
+    c) call that member function AFTER your std::cout statement in main.
+    NOTE: if your member functions being called in main() use std::cout statements, you don't need to create duplicates of these functions.  you only need to create member functions for the std::cout statements that exist in main().
+        
+ 3) you should see 2 (almost) identical messages in the program output for each member function you add:
+    one for the std::cout line, and one for the member function's output
+ 
+ 4) After you finish, click the [run] button.  Clear up any errors or warnings as best you can.
+ */
 
- Destructors
+/*
+ example:
+ */
+#include <iostream>
+namespace Example
+{
+    //a User-Defined Type
+    struct MyFoo
+    {
+        MyFoo();
+        ~MyFoo();
+        
+        void printDetailedMemberInfo();
+        
+        int returnValue() { return 3; }
+        float memberVariable = 3.14f;
+    };
 
-===============================================================
- If you completed Project 3:
+    MyFoo::MyFoo() { std::cout << "creating MyFoo" << std::endl; }
+    MyFoo::~MyFoo() { std::cout << "destroying MyFoo" << std::endl; }
+        
+	// 2a) the member function whose function body is almost identical to the std::cout statement in main.
+    //Remember to NAME FUNCTIONS WHAT THEY DO.
+    void MyFoo::printDetailedMemberInfo() //function name contains a verb!!!
+    { 
+        // 2b) explicitly using 'this' inside this member function.
+        std::cout << "MyFoo returnValue(): " << this->returnValue() << " and MyFoo memberVariable: " << this->memberVariable << std::endl; 
+    }  
+    
+    int main()
+    {
+        //an instance of the User-Defined Type named mf
+        MyFoo mf;
+        
+        // 1) a std::cout statement that uses mf's member variables
+        std::cout << "mf returnValue(): " << mf.returnValue() << " and mf memberVariable: " << mf.memberVariable << std::endl; 
+        
+        // 2c) calling mf's member function.  the member function's body is almost identical to the cout statement above.
+        mf.printDetailedMemberInfo();
+        return 0;
+    }
+}
 
- 1) Copy 3 of your user-defined types (the ones with constructors and
-for()/while() loops from Project 3) here Choose the classes that contained
-nested classes.  Include the nested classes when you copy them over.
-
- 2) move all of your implementations of all functions to OUTSIDE of the class.
-
- 3) add destructors
-        make the destructors do something like print out the name of the class.
-===============================================================
-If you skipped Project 3:
-write 3 UDTs below that EACH have:
-        5 member variables
-            the member variable names and types should be relevant to the work
-the UDT will perform. pick properties that can be represented with 'int float
-double bool char std::string' 3 member functions with an arbitrary number of
-parameters give some of those parameters default values. constructors that
-initialize some of these member variables the remaining member variables should
-be initialized in-class for() or while() loops that modify member variables 1) 2
-of your 3 UDTs need to have a nested UDT. this nested UDT should fulfill the
-same requirements as above: 5 member variables 3 member functions constructors
-and loops.
-
- 2) Define your implementations of all functions OUTSIDE of the class.
- NO IN-CLASS IMPLEMENTATION ALLOWED
- 3) add destructors to all of your UDTs
-        make the destructors do something like print out the name of the class.
-===============================================================
-
- 4) add 2 new UDTs that use only the types you copied above as member variables.
-
- 5) add 2 member functions that use your member variables to each of these new
-UDTs
-
- 6) Add constructors and destructors to these 2 new types that do stuff.
-        maybe print out the name of the class being destructed, or call a member
-function of one of the members.  be creative
-
- 7) copy over your main() from the end of Project3
-        get it to compile with the types you copied over.
-        remove any code in main() that uses types you didn't copy over.
-
- 8) Instantiate your 2 UDT's from step 4) in the main() function at the bottom.
-       call their member functions.
-
- 9) After you finish, click the [run] button.  Clear up any errors or warnings
-as best you can.
-
- you can resolve any [-Wdeprecated] warnings by adding -Wno-deprecated to list
-of compiler arguments in the .replit file. all of the "-Wno" in that file are
-compiler arguments. You can resolve any [-Wpadded] warnings by adding
--Wno-padded to the list of compiler arguments in the .replit file. all of the
-"-Wno" in that file are compiler arguments.
+/*
 
  Ignore the Atomic.h and LeakedObjectDetector.h files for now.
  You will use those in Part 3 of this project.
+*/
 
- */
-
+#include <iostream>
 /*
  copied UDT 1:
  */
+struct Castle
+{
+    int numberOfGates;
+    std::string nameOfKing;
+    std::string nameOfQueen;
+    float amountOfTaxesCollected;
+    bool isAtWar;
 
-struct IKEAStore {
-  // 5 properties:
-  //     1) list of article
-  std::string listOfArticle[3];
-  //     2) number of co worker
-  int numOfCoWorker;
-  //     3) average revenue per day
-  float avgRevenuePerDay;
-  //     4) number of stores
-  int numOfStores;
+    Castle();
+    ~Castle();
 
-  std::string storeName;
+    struct FarmlandRevenue
+    {
+        int totalRevenue = 2500;
+        int arces {65}, numberOfWorkers {120};
+        float wheatSalePricePerKG {1.8f};
+        std::string type {"Cereals and Grains"};
+        bool isInDrought {false};
 
-  IKEAStore();
-  ~IKEAStore();
+        FarmlandRevenue();
+        ~FarmlandRevenue();
 
-  struct Restaurant {
-    //     1) number of waiter
-    int numOfWaiter;
-    //     2) count of revenue per day
-    float revenuePerDay;
-    //     3) number of chef
-    int numOfChef;
-    //     4) list of raw material
-    std::string listOfRawMaterial[3];
-    //     5) list of menu
-    std::string listOfMenul[3];
-    std::string restoName;
+        void sellWheat(int wheatStockLevel, float currentMarketPrice, float amountToSell);
+        float displayCurrentTurnover(int totalWorkers, int farmlandArea, float currentMarketPrice, float previousMarketPrice);
+        void floodFarmlands(int areaToFlood, float amountOfFlooding, bool isIndrought);
+        void hireNewWorkers(int startWorkers, int revenueThreshold);
+    };
 
-    Restaurant();
-    ~Restaurant();
-
-    // 3 things it can do:
-    //     1) made food for customer
-    void madeFood(std::string orderedMenu, int totalOrder);
-    //     2) charge customer
-    double customerBilling(int numOrderedMenu, int numCustomer,
-                           float price); // return     customer billing
-    //     3) serving customer
-    void servingCustomer(int orderNumber, std::string orderedMenu);
-  };
-
-  // 3 things it can do:
-  //     1) Delivery order to customer
-  void deliverToCustomer(int totalOrder, std::string customerDetail,
-                         std::string deliveryAddress);
-  //     2) showcase room setting
-  void showCaseRoomSetting(int roomSize, std::string roomName,
-                           std::string targetCustomer);
-  //     3) return articles
-  void returnArticle(std::string articleName, int receiptNum,
-                     std::string customerName);
-  //     4) contactless ordering food
-  void contactlessOrderingFood(std::string ikeaCustResto, std::string foodMenu,
-                               int quantity, std::string custName);
-
-  //    5) fulfillment food supply on Store
-  void foodFulfillment(std::string restoname, std::string foodMenu);
-
-  Restaurant IKEAFoodRestaurant;
+    float reportCollectTaxes(float collectTaxes, FarmlandRevenue farmlandIncome);
+    void openCastleGates(int numberOfGatesClosed);
+    std::string announceOrders(std::string orders);
+    void fireSignalArrow(int startArrows, int targetHits);
 };
 
-IKEAStore::IKEAStore()
-    : listOfArticle{"POANG", "MALM", "OFTAST"}, numOfCoWorker(1200),
-      numOfStores(7), avgRevenuePerDay(100000) {
-  std::cout << "IKEA store class is constructed\n";
+Castle::Castle() : numberOfGates(8), nameOfKing("Edward"), nameOfQueen("Magda"), amountOfTaxesCollected(300.f), isAtWar(true)
+{
+    // Castle class constructor
+    std::cout << "Castle being constructed!\n";  
 }
-IKEAStore::~IKEAStore() { std::cout << "IKEA Store class is destructed\n"; }
-IKEAStore::Restaurant::Restaurant()
-    : numOfWaiter(7), revenuePerDay(1000),
-      numOfChef(3), listOfRawMaterial{"Letuce", "Cabbage", "Carrot"},
-      listOfMenul{"Meatball Plantbase", "Sweedish Meatball", "Fried Rice"} {
-  restoName = "";
-  std::cout << "Restaurant class is constructed\n";
+
+Castle::~Castle()
+{
+    // Castle class deconstructor
+    std::cout << "Castle being deconstructed\n";
 }
-IKEAStore::Restaurant::~Restaurant() {
-  std::cout << "Restaurant class is destructed\n";
+
+Castle::FarmlandRevenue::FarmlandRevenue()
+{
+    // FarmlandRevenue constructor
+    std::cout << "FarmlandRevenue being constructed!\n";
 }
-void IKEAStore::deliverToCustomer(int totalOrder, std::string customerDetail,
-                                  std::string deliveryAddress) {
-  std::cout << "Delivery to customer from Warehouse\n";
+
+Castle::FarmlandRevenue::~FarmlandRevenue()
+{
+    // FarmlandRevenue deconstructor
+    std::cout << "FarmlandRevenue being deconstructed!\n";
 }
-void IKEAStore::showCaseRoomSetting(int roomSize, std::string roomName,
-                                    std::string targetCustomer) {
-  std::cout << "Showroom customer to see Insipiration\n";
+
+void Castle::FarmlandRevenue::hireNewWorkers(int startWorkers, int revenueThreshold)
+{
+    int worker = (numberOfWorkers / numberOfWorkers);
+    int workers = startWorkers;
+    int revenuePerWorkerPerDay = (worker * 10);
+    int revenue = workers * revenuePerWorkerPerDay;
+
+    while (revenue < revenueThreshold) 
+    {
+        ++workers;
+        revenue = workers * revenuePerWorkerPerDay;
+        if (revenue >= revenueThreshold) 
+        {
+            std::cout << "Hired " << workers << " workers to reach the revenue threshold.\n";
+            return;
+        }
+    }
+    std::cout << "The initial number of workers already generates enough revenue.\n";
 }
-void IKEAStore::returnArticle(std::string articleName, int receiptNum,
-                              std::string customerName) {
-  std::cout << "Return goods will be put on AS IS section \n";
+
+void Castle::fireSignalArrow(int startArrows, int targetHits) 
+{
+    int arrows = startArrows;
+    int hits = 0;
+
+    while (arrows > 0 && hits < targetHits) 
+    {
+        --arrows;
+
+        int hitTarget = rand() % 2;
+        
+        if (hitTarget == 1) 
+        {
+            ++hits;
+            std::cout << "Target hit! Total hits: " << hits << "\n";
+        } 
+        else 
+        {
+            std::cout << "Missed. Remaining arrows: " << arrows << "\n";
+        }
+        if (hits >= targetHits) 
+        {
+            std::cout << "Target hits threshold reached with " << arrows << " arrows left.\n";
+            return;
+        }
+    }
+    
+    if (arrows == 0) 
+    {
+        std::cout << "Out of arrows. Total hits: " << hits << "\n";
+    }
 }
-void IKEAStore::contactlessOrderingFood(std::string ikeaCustResto,
-                                        std::string foodMenu, int quantity,
-                                        std::string custName) {
-  std::cout << "Contactless food ordering at Store\n";
+
+void Castle::FarmlandRevenue::sellWheat(int wheatStockLevel, float currentMarketPrice, float amountToSell)
+{
+    int availableStock = wheatStockLevel - 100;
+    
+    if (availableStock < 100)
+    {
+        std::cout << "Stock levels too low\n";
+    }
+    else
+    {
+        std::cout << "Stock levels OK\n";
+        std::cout << "Market price: " << currentMarketPrice << "\n";
+        float estimatedSale = currentMarketPrice * amountToSell;
+        std::cout << "Expected sale price: " << estimatedSale << "\n";
+    }
 }
-void IKEAStore::foodFulfillment(std::string restoName,
-                                std::string foodMenu) {
-  IKEAStore::IKEAFoodRestaurant.restoName = restoName;
-  std::cout << "Restock raw material for Food store\n";
+
+float Castle::FarmlandRevenue::displayCurrentTurnover(int totalWorkers, int farmlandArea, float currentMarketPrice, float previousMarketPrice)
+{
+    int workForceOverArea = totalWorkers + farmlandArea / 2;
+    std::cout << "Workforce turnover per acre: " << workForceOverArea << std::endl;
+    float marketEstimation = currentMarketPrice - previousMarketPrice * 0.2f;
+            
+    return marketEstimation;
 }
-void IKEAStore::Restaurant::madeFood(std::string orderedMenu, int totalOrder) {
-  std::cout << "IKEA Food resto is made food for customer\n";
+
+void Castle::FarmlandRevenue::floodFarmlands(int areaToFlood, float amountOfFlooding, bool isIndrought)
+{
+    if(isIndrought)
+    {
+        std::cout << "Select area to flood " << areaToFlood << "\n";
+        std::cout << "Adjust flood level " << amountOfFlooding << "\n";       
+    }
+    else
+    {
+        std::cout << "Flooding not required\n";
+    }
 }
-double IKEAStore::Restaurant::customerBilling(int numOrderedMenu,
-                                              int numCustomer, float price) {
-  std::cout << "Bill to paid by customer after order\n";
-  return 1000;
+
+float Castle::reportCollectTaxes(float collectTaxes, FarmlandRevenue farmlandIncome)
+{
+    float taxTotalIncome = 0.f;
+    float currentlyTaxed = collectTaxes * 20;
+    float produceTax = farmlandIncome.displayCurrentTurnover(45, 12, 12.f, 10.f);
+
+    std::cout << "Reporting tax collection my lord!\n";
+    
+    return taxTotalIncome = currentlyTaxed + produceTax;
 }
-void IKEAStore::Restaurant::servingCustomer(int orderNumber,
-                                            std::string orderedMenu) {
-  std::cout << "Finished order serving to customer\n";
+
+void Castle::openCastleGates(int numberOfGatesClosed)
+{
+    if (numberOfGatesClosed <= 0)
+    {
+        std::cout << "All gates are already open.\n";
+    }
+    else
+    {
+        std::cout << "Opening " << numberOfGatesClosed << " gates...\n";
+        std::cout << "Gates opened successfully!\n";
+    }
 }
+
+std::string Castle::announceOrders(std::string orders)
+{
+    std::cout << "Here are the orders: " << orders << "\n";
+    return orders;
+}
+
 /*
  copied UDT 2:
  */
-struct barcodeScanner {
-  std::string deviceName;
-}; // UDT 5
-struct customerPoleDisplay {
-  std::string deviceName;
-}; // UDT 6
-struct mainPOSDisplay {
-  std::string deviceName;
-}; // UDT 7
-struct receiptPrinter {
-  std::string deviceName;
-}; // UDT 8
-struct cashDrawer {
-  std::string deviceName;
-}; // UDT 9
+struct RolandTB303
+{
+    int stepSequencer {16}, modeDial {10}, tempoDial {32};
+    float cutoffFrequencyFilterKnob {750.f}, volumeKnob {-18.f};
 
-struct POS {
-  barcodeScanner
-      scanner; // a member variabledeclaration of an instance of UDT 5
-  customerPoleDisplay
-      poleDisplay; // a member variabledeclaration of an instance of UDT 6
-  mainPOSDisplay
-      POSDisplay; // a member variabledeclaration of an instance of UDT 7
-  receiptPrinter
-      receipt;       // a member variabledeclaration of an instance of UDT 8
-  cashDrawer drawer; // a member variabledeclaration of an instance of UDT 9
-  std::string deviceName;
+    RolandTB303();
+    ~RolandTB303();
 
-  POS();
-  ~POS();
-  //     1) Input transaction
-  void inputTransaction(int articleNumber, float price, int quantity);
-  //     2) print reciept
-  void printReceipt(int orderNumber, std::string orderDetail);
-  //     3) open cash drawer
-  void openCashDrawer();
+    struct SavePattern
+    {
+        int numberOfSteps, tempoNumberSelected, loopCount;
+        bool exportingToExternalDisk;
+        float randomisationAmount;
+
+        SavePattern();
+        ~SavePattern();
+
+        void savingSequence(int stepSize, int numberOfStepsEnabled, int numberOfLoops, int tempo);
+        bool savingToExternal(int stepCount, std::string fileType = "TB303.p");
+        void displaySavingProgress(int timeRemaining, float savingRate);
+        void recallPattern(char X);
+    };
+
+    void programSequence(RolandTB303 sequence);
+    void filterSignal(float cutoffFrequency);
+    float tempoAdjust(RolandTB303 tempo);
+    int syncMidi(int midiNotesIn);
 };
 
-POS::POS() : scanner(), poleDisplay(), POSDisplay(), receipt(), drawer() {
-  std::cout << "POS Class is constructed\n";
-}
-POS::~POS() { std::cout << "POS Class is destructed\n"; }
-void POS::inputTransaction(int articleNumber, float price, int quantity) {
-  std::cout << "Input transaction on the POS\n";
-}
-void POS::printReceipt(int orderNumber, std::string orderDetail) {
-  std::cout << "Print customer receipt\n";
+RolandTB303::RolandTB303()
+{
+    // RolandTB303 constructor
+    std::cout << "RolandTB303 being constructed!\n";  
 }
 
+RolandTB303::~RolandTB303()
+{
+    // RolandTB303 deconstructor
+    std::cout << "RolandTB303 being deconstructed.\n";
+}
+
+RolandTB303::SavePattern::SavePattern() : numberOfSteps(24), tempoNumberSelected(12), loopCount(8), exportingToExternalDisk(true), randomisationAmount(8.5f)
+{
+    // Constructor
+    std::cout << "SavePattern being constructed!\n";
+}
+
+RolandTB303::SavePattern::~SavePattern()
+{
+    // Deconstructor
+    std::cout << "SavePattern being deconstructed!\n";
+}
+    
+void RolandTB303::SavePattern::recallPattern(char X)
+{    
+    if (X == 'A')
+    {
+        std::cout << "Loading previous sequence... " << X << "\n";
+        int sequenceMemory = 25;
+        std::cout << "Sequence step total: " << sequenceMemory << "\n";
+        
+        for (int seq = 0; seq < 25; ++seq)
+        {
+            std::cout << "Step " << (seq + 1) << " loaded\n";
+        }
+    }
+    else if (X == 'B')
+    {
+        std::cout << "Loading previous sequence... " << X << "\n";
+        int sequenceMemory = 15;
+        std::cout << "Sequence step total: " << sequenceMemory << "\n";
+        
+        for (int seq = 0; seq < 25; ++seq)
+        {
+            std::cout << "Step " << (seq + 1) << " loaded\n";
+        }   
+    }
+    else if (X == 'C')
+    {
+        std::cout << "Loading previous sequence... " << X << "\n";
+        int sequenceMemory = 41;
+        std::cout << "Sequence step total: " << sequenceMemory << "\n";
+        
+        for (int seq = 0; seq < 25; ++seq)
+        {
+            std::cout << "Step " << (seq + 1) << " loaded\n";
+        } 
+    }
+    else
+    {
+        std::cout << "Loading previous sequence ERROR...\n" << "Please try again...\n";
+    }
+}
+
+int RolandTB303::syncMidi(int midiNotesIn)
+{
+    int totalMidiCount = midiNotesIn;
+    
+    for (int note = 0; note < midiNotesIn; ++note)
+    {
+        std::cout << "Syncing MIDI...\n";
+        
+        if (midiNotesIn != 0)
+        {
+            std::cout << "MIDI sync progress " << (note + 1) << " out of " << midiNotesIn << " \n" << "MIDI notes remaining before full sync " << (totalMidiCount -= 1) << " \n";
+        }
+    }
+    return totalMidiCount;
+}
+
+void RolandTB303::SavePattern::savingSequence(int stepSize, int numberOfStepsEnabled, int numberOfLoops, int tempo)
+{
+    int savedSeq = stepSize + numberOfStepsEnabled + numberOfLoops + tempo;
+    std::cout << "Saving sequence..." << savedSeq << "\n";
+}
+
+bool RolandTB303::SavePattern::savingToExternal(int stepCount, std::string fileType)
+{
+    if(stepCount > 0)
+    {
+        std::cout << "Exporting " << fileType << "\n";
+        return true;
+    }
+    std::cout << "Export error, no steps" << "\n";
+    return false;
+}
+
+void RolandTB303::SavePattern::displaySavingProgress(int timeRemaining, float savingRate)
+{
+    std::cout << "Time remaining: " << timeRemaining << " (secs)\n";
+    std::cout << "saving data speed: " << savingRate << " kbps\n";
+}
+
+void RolandTB303::programSequence(RolandTB303 sequence)
+{
+    int displaySequenceCount = sequence.stepSequencer;
+    std::cout << "Number of steps: " << displaySequenceCount << "\n";
+}
+
+void RolandTB303::filterSignal(float cutoffFrequency)
+{
+    std::cout << "Filter CutOff: " << cutoffFrequency << "Hz\n";
+}
+
+float RolandTB303::tempoAdjust(RolandTB303 tempo)
+{    
+    if (tempo.tempoDial > 0)
+    {
+        std::cout << "Tempo has been changed\n";
+        return 15.f;
+    }
+    std::cout << "No tempo changes here...\n";
+    return 1.f;
+}
 /*
  copied UDT 3:
  */
-struct Hotel {
-  //     1) number of rooms
-  int numOfRooms;
-  //     2) list of hotel menu
-  std::string listOfHotelMenu[3];
-  //     3) total of co worker
-  int totalCoWorker;
-  //     4) count of smoking room
-  int cntSmookingRoom;
-  //     5) average occupancy per day
-  int avgVisitPerDay;
+struct MidiKeyboard
+{
+    int numberOfKeys, numberOfKnobs, numberOfMPCPads;
+    double pitchControlRange;
+    char modeSelection;
 
-  Hotel();
-  ~Hotel();
-  struct Room {
-    int roomNum;
-    int roomType;
+    MidiKeyboard();
+    ~MidiKeyboard();
 
-    Room();
-    ~Room();
-
-    void roomFacility(int roomType);
-    void roomAmnesties(int roomType);
-  };
-  // 3 things it can do:
-  //     1) provide room service
-  void roomService(int roomNumber, std::string requestedService);
-  //     2) book room for stay
-  void bookRoom(int roomNumber, std::string visitorName, float price);
-  //     3) reserve hotel restaurant
-  void reserveRestaurant(std::string customerName, int numofCustomer);
+    double adjustPitch(MidiKeyboard pitchChange);
+    void isKeyPressed();
+    float padHitAmount(MidiKeyboard padNumber);
+    void ledLightDemoMode(std::string onOff);
 };
 
-Hotel::Hotel()
-    : numOfRooms(100), listOfHotelMenu{"Sandwich Tuna", "Tenderloin Steak",
-                                       "Fried Fries"},
-      totalCoWorker(120), cntSmookingRoom(20), avgVisitPerDay(60) {
-  std::cout << "Hotel class is constructed\n";
+MidiKeyboard::MidiKeyboard() : numberOfKeys(25), numberOfKnobs(16), numberOfMPCPads(4), pitchControlRange(300000.0), modeSelection('Y')
+{
+    // Constructor
+    std::cout << "MidiKeyboard being constructed!\n";  
 }
-Hotel::~Hotel() { std::cout << "Hotel class is destructed"; }
 
-Hotel::Room::Room() : roomNum(12), roomType(2) {
-  std::cout << "Room class is constructed\n";
+MidiKeyboard::~MidiKeyboard()
+{
+    // Deconstructor
+    std::cout <<"MidiKeyboard being deconstructed!\n";
 }
-Hotel::Room::~Room() { std::cout << "Room class is destructed\n"; }
+    
+void MidiKeyboard::ledLightDemoMode(std::string onOff)
+{
+    int totalLedsOnKeyboard = 1;
+    
+    if (onOff == "on")
+    {
+        for (int led = 0; led < totalLedsOnKeyboard; ++led)
+        {
+            std::cout << "**\n";
+            std::cout << "     **\n";
+            std::cout << "          **\n";
+            std::cout << "               **\n";
+            std::cout << "   PROGRAMMING      **\n";
+            std::cout << "   FOR                   **\n";
+            std::cout << "   MUSICIANS                  **\n";
+            std::cout << "   IS                    **\n";
+            std::cout << "   GREAT!           **\n";
+            std::cout << "               **\n";
+            std::cout << "          **\n";
+            std::cout << "     **\n";
+            std::cout << "**\n";
+        }
+    }
+    else
+    {
+         std::cout << "*BLINK* please enter ""on"" for light demo\n";
+    }
+}
 
-void Hotel::roomService(int roomNumber, std::string requestedService) {
-  std::cout << "Requested room service to receiptionist\n";
+double MidiKeyboard::adjustPitch(MidiKeyboard pitchChange)
+{    
+    double adjustedPitch = pitchControlRange + pitchChange.pitchControlRange;
+    std::cout << "Pitch adjusting!\n";
+    return adjustedPitch;
 }
-void Hotel::bookRoom(int roomNumber, std::string visitorName, float price) {
-  std::cout << "Book room for stay\n";
+
+void MidiKeyboard::isKeyPressed()
+{
+    std::cout << "Key input detected\n";
 }
-void Hotel::reserveRestaurant(std::string customerName, int numofCustomer) {
-  std::cout << "Reserve restaurant for dinner\n";
+
+float MidiKeyboard::padHitAmount(MidiKeyboard padNumber)
+{
+    std::cout << "Pad number: " <<padNumber.numberOfMPCPads << "\n";
+    std::cout << "BOY you hitting that pad haaaaard!!!\n";
+    return 10.f;
 }
 
 /*
  new UDT 4:
  with 2 member functions
  */
-struct ClusterHouseArea {
-  IKEAStore nearestIKEAStore;
-  IKEAStore::Restaurant nearestIKEAFood;
+struct Kingdom
+{
+    Kingdom();
+    ~Kingdom();
 
-  ClusterHouseArea();
-  ~ClusterHouseArea();
+    Castle myCastle;
+    Castle::FarmlandRevenue farmlands;
 
-  std::string FindNearestIKEAStore(std::string clusterName, int vehicleType);
-  int calcNumOfResident(std::string clusterName, int houseUnit,
-                         int avgResidentPerHouse);
+    void defendCastle();
+    void manageFarmlands();
 };
 
-ClusterHouseArea::ClusterHouseArea() : nearestIKEAStore(), nearestIKEAFood() {
-  std::cout << "Cluster house area class is constructed\n";
-}
-ClusterHouseArea::~ClusterHouseArea() {
-  std::cout << "Cluster house area class is destructed\n";
-}
-
-std::string ClusterHouseArea::FindNearestIKEAStore(std::string clusterName,
-                                                   int vehicleType) {
-
-  if (clusterName == "Carllio")
-    if (vehicleType == 1) // vehicleType = 1 (car), 2 (Bus)
-      return nearestIKEAStore.storeName = "Alam Sutera";
-
-  return nearestIKEAStore.storeName = "Taman Angrek";
-}
-
-int ClusterHouseArea::calcNumOfResident(std::string clusterName, int houseUnit, int avgResidentPerHouse)
+void Kingdom::defendCastle()
 {
-    if (clusterName == "Carllio")
-        return 1000;
-    return houseUnit *  avgResidentPerHouse;
+    std::cout << "Orders to defend have been issued...\n";
+    myCastle.announceOrders("Defend the castle!");
+    myCastle.openCastleGates(0);  
+    std::cout << "Castle gates now being closed...\n";
+}
+
+void Kingdom::manageFarmlands()
+{
+    std::cout << "Farmland management under way.\n";
+    farmlands.displayCurrentTurnover(50, 25, 15.67f, 10.9f);
+    int displayFarmlandSize = farmlands.arces;
+    std::cout << "Current farmland area: "<< displayFarmlandSize << "\n";
+}
+
+Kingdom::Kingdom()
+{
+    // constructor
+    std::cout << "The Kingdom is being constructed!\n";
+}
+
+Kingdom::~Kingdom()
+{
+    // decstructor
+    std::cout << "The kingdom has fallen! Close the gates!\n";
+    defendCastle();
 }
 
 /*
  new UDT 5:
  with 2 member functions
  */
-struct ElectronicStore {
-  POS posDevice;
-  barcodeScanner scannerDevice;
+struct MusicStore
+{
+    MusicStore();
+    ~MusicStore();
+    MidiKeyboard keyboards;
+    RolandTB303::SavePattern bassSynths;
 
-  ElectronicStore();
-  ~ElectronicStore();
-
-  int buyPOS(std::string deviceName, int quantity, int price);
-  bool checkStockScanner(std::string deviceName);
+    void listKeyboardStock();
+    void turnOnBassSynthDisplays();
 };
 
-ElectronicStore::ElectronicStore() {
-  posDevice.deviceName = "Dell";
-  std::cout << "Electronic Store class is constructed\n";
-}
-ElectronicStore::~ElectronicStore() {
-  std::cout << "Electronic Store class is destructed\n";
-}
-
-int ElectronicStore::buyPOS(std::string deviceName, int quantity, int price) {
-  if (deviceName == posDevice.deviceName)
-    if (quantity >= 1)
-      return 1000;
-  return quantity * price;
+MusicStore::MusicStore()
+{
+    // constructor
+    std::cout << "Music store is open! Now listing keyboard inventory...\n";
+    listKeyboardStock();
 }
 
-bool ElectronicStore::checkStockScanner(std::string deviceName) {
-  if (deviceName == "Dell")
-    return true;
-  return false;
+MusicStore::~MusicStore()
+{
+    // destructor
+    std::cout << "The music store is now closing.\n";
 }
+
+void MusicStore::listKeyboardStock()
+{
+    std::cout << "Obtaining current keyboard stock level...\n";
+    int totalKeyboardKeys = keyboards.numberOfKeys;
+    if(totalKeyboardKeys > 200)
+    {
+        std::cout << "There are more than eight 25-key MIDI keyboards in stock!\n";
+    }
+    else
+    {
+        std::cout << "Less than eight 25-key MIDI keyboards in stock, list as stock running low\n";
+    }
+}
+
+void MusicStore::turnOnBassSynthDisplays()
+{
+    std::cout << "Loading previous demo patterns...\n";
+    bassSynths.recallPattern('B');
+}
+
 /*
  MAKE SURE YOU ARE NOT ON THE MASTER BRANCH
 
- Commit your changes by clicking on the Source Control panel on the left,
- entering a message, and click [Commit and push].
-
- If you didn't already:
+ Commit your changes by clicking on the Source Control panel on the left, entering a message, and click [Commit and push].
+ 
+ If you didn't already: 
     Make a pull request after you make your first commit
-    pin the pull request link and this repl.it link to our DM thread in a single
- message.
+    pin the pull request link and this repl.it link to our DM thread in a single message.
 
  send me a DM to review your pull request when the project is ready for review.
 
  Wait for my code review.
  */
-int main() {
-  //===================IKEAStore==================
-  IKEAStore store;
-  // 1
-  store.deliverToCustomer(10, "Ariq", "carillo");
-  // 2
-  store.showCaseRoomSetting(100, "living room", "Parents with 1 kids");
-  // 3
-  store.returnArticle("MALM", 01, "Ariq");
-  // 4
-  store.contactlessOrderingFood("Customer Restaurant", "Sweedish Meatball", 1, "Ariq");
-  //5
-  store.foodFulfillment("Customer Restaurant", "Meatball");
-  //6
-  store.IKEAFoodRestaurant.madeFood("Tenderloin Steak", 1);
-  //7
-  store.IKEAFoodRestaurant.customerBilling(10, 10, 1000.0f);
-  //8
-  store.IKEAFoodRestaurant.servingCustomer(10, "Fish and Chips");
 
-  //===================POS==================
-  POS posDevice; 
-  //1
-  posDevice.inputTransaction(00113223, 100.0f, 10);
-  //2
-  posDevice.printReceipt(0102313013,"ABCD");
+int main()
+{
+    
+    //------------------------------------------------------------------------------------------------------------------
+    
+    Castle castle;
+    //1
+    castle.announceOrders("Release the hounds!");
+    std::cout << "names of royalty: " << castle.nameOfKing << " & " << castle.nameOfQueen << "\n";
 
-  //===================HOTEL==================
-  Hotel hotel;
-  //1
-  hotel.roomService(10, "Cleaning");
-  //2
-  hotel.bookRoom(2, "Ariq", 100.03f);
-  //3
-  hotel.reserveRestaurant("Ariq", 6262424);
+    //2
+    castle.openCastleGates(4);
+    std::cout << "total gates at castle: " << castle.numberOfGates << "\n";
 
-  //===================ClusteredHouse==================
-  ClusterHouseArea clustered;
-  //1
-  std::cout << clustered.FindNearestIKEAStore("Carllio", 1) << std::endl;
-  //2
-  std::cout << clustered.calcNumOfResident("Carllio", 9, 2) << std::endl;
+    //3
+    castle.reportCollectTaxes(10.f, Castle::FarmlandRevenue());
+    std::cout << "tax collected: " << castle.amountOfTaxesCollected << "\n";
 
-  //===================ElectronicStore==================
+    //4
+    castle.fireSignalArrow(20, 8); // enter how many arrows first, then hit threshold requirement value
+        
+    //------------------------------------------------------------------------------------------------------------------
+    Castle::FarmlandRevenue farmlandrev;
 
-  ElectronicStore elecStore;
-  //1
-  std::cout << elecStore.buyPOS("Dell", 3, 1000) << std::endl;
-  //2
-  std::cout << elecStore.checkStockScanner("Dell") << std::endl;
-   
-  std::cout << "good to go!" << std::endl;
+    //1
+    farmlandrev.displayCurrentTurnover(30, 66, 12.f, 8.f);
+    std::cout << "Current wholesale price of wheat per kg: " << farmlandrev.wheatSalePricePerKG << "\n";
+    //2
+    farmlandrev.floodFarmlands(150, 23.f, true);
+    std::cout << "Is the farmland in drought? 0 = no, 1 = yes: " << farmlandrev.isInDrought << "\n";
+    //3
+    farmlandrev.sellWheat(500, 21.f, 180.f);
+    std::cout << "Current number of able workers: " << farmlandrev.numberOfWorkers << "\n";
+
+    //4
+    farmlandrev.hireNewWorkers(10, 3000); // enter number of workers and income threshold
+
+    //------------------------------------------------------------------------------------------------------------------
+    
+    MidiKeyboard midikeyboard;
+
+    //1
+    midikeyboard.adjustPitch(MidiKeyboard());
+    std::cout << "List number of keys: " << midikeyboard.numberOfKeys << "\n";
+    //2
+    midikeyboard.isKeyPressed();
+    std::cout << "Available pitch control range: " << midikeyboard.pitchControlRange << "\n";
+    //3
+    midikeyboard.padHitAmount(MidiKeyboard());
+    std::cout << "Programmable pads: " << midikeyboard.numberOfMPCPads << "\n";
+
+    //4
+    midikeyboard.ledLightDemoMode("on"); // enter "on" for demo
+    
+    //------------------------------------------------------------------------------------------------------------------
+    
+    RolandTB303 rolandtb303;
+
+    //1
+    rolandtb303.filterSignal(3500.f);
+    std::cout << "Volume level: " << rolandtb303.volumeKnob << "\n";
+
+    //2
+    rolandtb303.programSequence(RolandTB303());
+    
+    //3
+    rolandtb303.tempoAdjust(RolandTB303());
+
+    //4
+    rolandtb303.syncMidi(15); // enter number of midi notes
+    
+    //------------------------------------------------------------------------------------------------------------------
+    
+    RolandTB303::SavePattern savepattern;
+
+    //1
+    savepattern.displaySavingProgress(35, 50.f);
+
+    //2
+    savepattern.savingSequence(4, 8, 2, 120);
+    
+    //3
+    savepattern.savingToExternal(8, "TB303.p");
+
+    //4
+    savepattern.recallPattern('C'); // enter 'A', 'B', 'C' to recall partern
+
+    //------------------------------------------------------------------------------------------------------------------
+
+    Kingdom kingdom;
+
+    //1
+    kingdom.manageFarmlands();
+
+    //2
+    kingdom.defendCastle();
+
+    //------------------------------------------------------------------------------------------------------------------
+
+    MusicStore musicStore;
+
+    //1 
+    musicStore.turnOnBassSynthDisplays();
+
+    //2
+    musicStore.listKeyboardStock();
+
+    //------------------------------------------------------------------------------------------------------------------
+
+    std::cout << "good to go!" << std::endl;
 }
